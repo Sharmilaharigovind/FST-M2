@@ -1,0 +1,15 @@
+DROP TABLE files;
+
+CREATE TABLE files(line STRING);
+ 
+-- Load data into the database using a file  
+LOAD DATA LOCAL INPATH '/file01.txt' INTO TABLE files;
+
+DROP TABLE word_counts;
+ 
+-- Create a new table using data from the files 
+CREATE TABLE word_counts AS
+SELECT word, count(word) AS totalCount FROM
+(SELECT explode(split(line, ' ')) AS word FROM files) w
+GROUP BY word
+ORDER BY totalCount;
