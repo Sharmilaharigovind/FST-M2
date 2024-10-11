@@ -1,0 +1,35 @@
+CREATE EXTERNAL TABLE IF NOT EXISTS episodes (
+    character STRING,
+    dialogue STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/root/my_hive_data';
+
+
+
+-- Load data from the input files into the external table
+-- (Assuming the files are stored in the specified HDFS location)
+
+-- Query to count lines spoken by each character
+CREATE TABLE IF NOT EXISTS character_line_counts AS
+SELECT
+    character,
+    COUNT(*) AS total_lines
+FROM
+    episodes
+GROUP BY
+    character
+ORDER BY
+    total_lines DESC;
+
+-- Store the results in HDFS
+INSERT OVERWRITE DIRECTORY '/root/output_directory'
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+SELECT
+    character,
+    total_lines
+FROM
+    character_line_counts;
