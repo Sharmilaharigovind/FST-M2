@@ -1,0 +1,25 @@
+# Specify Base Image
+FROM docker.io/node:18-alpine as builder
+
+# Work Directory
+WORKDIR /usr/app
+
+#Copy the package.json into workdir
+COPY ./package.json ./
+
+# Install Dependencies
+RUN npm install
+
+# Copy dev files into Container
+COPY ./ ./
+
+Run npm run build
+
+FROM node:18-alphine
+WORKDIR /user/app
+COPY ./package.json ./
+RUN npm install
+COPY --from=builder /user/app/dist ./
+
+# Startup Command
+CMD ["npm", "serve.js"]
